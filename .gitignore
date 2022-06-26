@@ -1,0 +1,13 @@
+# Dependency directories
+node_modules/
+build
+logs/
+example1.exe
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
