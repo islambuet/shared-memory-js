@@ -70,22 +70,31 @@ void ConnectMemory(const FunctionCallbackInfo<Value>& args) {
 void WriteStringToMemory(const FunctionCallbackInfo<Value>& args) {
   Isolate* isolate = args.GetIsolate();
   Local<Context> context = isolate->GetCurrentContext();
+  try{
+    unsigned __int64 address=args[0].As<BigInt>()->Uint64Value();
+    LPCTSTR pMemory=(LPCTSTR) address;
 
-  unsigned __int64 address=args[0].As<BigInt>()->Uint64Value();
-  LPCTSTR pMemory=(LPCTSTR) address;
-
-  Local<String> messageString= Local<String>::Cast(args[1]);
-  TCHAR* message;
-  (*messageString)->WriteUtf8(isolate, message);
-  CopyMemory((PVOID)pMemory, message, (_tcslen(message) * sizeof(TCHAR)));  
+    Local<String> messageString= Local<String>::Cast(args[1]);
+    TCHAR* message;
+    (*messageString)->WriteUtf8(isolate, message);
+    CopyMemory((PVOID)pMemory, message, (_tcslen(message) * sizeof(TCHAR)));  
+  }
+  catch(...){
+    isolate->ThrowException(String::NewFromUtf8(isolate, "Failed to Write").ToLocalChecked()); 
+  }
 }
 void ReadStringFromMemory(const FunctionCallbackInfo<Value>& args) {
   Isolate* isolate = args.GetIsolate();
   Local<Context> context = isolate->GetCurrentContext();
-
-  unsigned __int64 address=args[0].As<BigInt>()->Uint64Value();
-  LPCTSTR pMemory=(LPCTSTR) address;
-  args.GetReturnValue().Set(String::NewFromUtf8(isolate, pMemory).ToLocalChecked());   
+  try{
+    unsigned __int64 address=args[0].As<BigInt>()->Uint64Value();
+    LPCTSTR pMemory=(LPCTSTR) address;
+    args.GetReturnValue().Set(String::NewFromUtf8(isolate, pMemory).ToLocalChecked()); 
+  }
+  catch(...){
+    isolate->ThrowException(String::NewFromUtf8(isolate, "Failed to Read").ToLocalChecked()); 
+  }
+   
 }
 void Init(Local<Object> exports) {  
   NODE_SET_METHOD(exports, "getch", Getch);    
