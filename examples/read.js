@@ -1,6 +1,6 @@
 var sm = require("..");
 try{
-    const val = "TEST1";
+    const val = "MEMORY1";
     let memoryAddress=sm.connectMemory(val);
     let message=sm.readStringFromMemory(memoryAddress);
     console.log(message);

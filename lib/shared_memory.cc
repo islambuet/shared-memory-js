@@ -5,6 +5,8 @@
 #include <conio.h>
 #include <tchar.h>
 #include <iostream>
+#include "Array01.h"
+#include "Array02.h"
 
 #define BUF_SIZE 256
 
@@ -78,6 +80,7 @@ void WriteStringToMemory(const FunctionCallbackInfo<Value>& args) {
     TCHAR* message;
     (*messageString)->WriteUtf8(isolate, message);
     CopyMemory((PVOID)pMemory, message, (_tcslen(message) * sizeof(TCHAR)));  
+    args.GetReturnValue().Set(true); 
   }
   catch(...){
     isolate->ThrowException(String::NewFromUtf8(isolate, "Failed to Write").ToLocalChecked()); 
@@ -96,11 +99,45 @@ void ReadStringFromMemory(const FunctionCallbackInfo<Value>& args) {
   }
    
 }
+void WriteArray01ToMemory(const FunctionCallbackInfo<Value>& args) {
+  Isolate* isolate = args.GetIsolate();
+  Local<Context> context = isolate->GetCurrentContext();
+  try{
+    unsigned __int64 address=args[0].As<BigInt>()->Uint64Value();
+    LPCTSTR pMemory=(LPCTSTR) address;
+
+    Local<Object> array_01Obj= Local<Object>::Cast(args[1]);
+    StructureArray01 array_01=getStructureArray01FromObject(isolate,context,array_01Obj);   
+    CopyMemory((PVOID)pMemory, &array_01, sizeof(array_01));  
+    args.GetReturnValue().Set(true); 
+  }
+  catch(...){
+    isolate->ThrowException(String::NewFromUtf8(isolate, "Failed to Write").ToLocalChecked()); 
+  }
+}
+void ReadArray02FromMemory(const FunctionCallbackInfo<Value>& args) {
+  Isolate* isolate = args.GetIsolate();
+  Local<Context> context = isolate->GetCurrentContext();
+  try{
+    unsigned __int64 address=args[0].As<BigInt>()->Uint64Value();
+    LPCTSTR pMemory=(LPCTSTR) address;
+    StructureArray02 array_02;
+    memcpy(&array_02, pMemory, sizeof(array_02));    
+    Local<Object> array_02Obj=getObjectFromStructureArray02(isolate,context,array_02); 
+    args.GetReturnValue().Set(array_02Obj);
+  }
+  catch(...){
+    isolate->ThrowException(String::NewFromUtf8(isolate, "Failed to Read").ToLocalChecked()); 
+  }
+   
+}
 void Init(Local<Object> exports) {  
   NODE_SET_METHOD(exports, "getch", Getch);    
   NODE_SET_METHOD(exports, "createMemory", CreateMemory);    
   NODE_SET_METHOD(exports, "connectMemory", ConnectMemory);    
   NODE_SET_METHOD(exports, "writeStringToMemory", WriteStringToMemory);    
   NODE_SET_METHOD(exports, "readStringFromMemory", ReadStringFromMemory);    
+  NODE_SET_METHOD(exports, "writeArray01ToMemory", WriteArray01ToMemory);    
+  NODE_SET_METHOD(exports, "readArray02FromMemory", ReadArray02FromMemory);    
 }
 NODE_MODULE(NODE_GYP_MODULE_NAME, Init)

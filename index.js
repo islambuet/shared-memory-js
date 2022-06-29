@@ -9,8 +9,7 @@ module.exports ={
                 throw "Too long key."                
             }
             try{                
-                let memoryAddress=shared_memory.createMemory(key);
-                return memoryAddress;
+                return shared_memory.createMemory(key);                
             }catch(e){                
                 throw e;
             }
@@ -25,8 +24,7 @@ module.exports ={
                 throw "Too long key."                
             }
             try{                
-                let memoryAddress=shared_memory.connectMemory(key);
-                return memoryAddress;
+                return shared_memory.connectMemory(key);                
             }catch(e){                
                 throw e;
             }
@@ -36,10 +34,33 @@ module.exports ={
         }       
     },
     writeStringToMemory(memoryAddress,message){
-        shared_memory.writeStringToMemory(memoryAddress,message);
+        try{
+            let status = shared_memory.writeStringToMemory(memoryAddress,message);
+            return status;
+            //return shared_memory.writeStringToMemory(memoryAddress,message);//TODO single line does not work for strange reason
+        }catch(e){                
+            throw e;
+        }
     },
     readStringFromMemory(memoryAddress){
-        let  message = shared_memory.readStringFromMemory(memoryAddress);
-        return message;        
-    }
+        try{                
+            return shared_memory.readStringFromMemory(memoryAddress);               
+        }catch(e){                
+            throw e;
+        }
+    },
+    writeArray01ToMemory(memoryAddress,array_01){
+        try{
+            return shared_memory.writeArray01ToMemory(memoryAddress,array_01);
+        }catch(e){                
+            throw e;
+        }
+    },
+    readArray02FromMemory(memoryAddress){
+        try{                
+            return shared_memory.readArray02FromMemory(memoryAddress);               
+        }catch(e){                
+            throw e;
+        }
+    },
 }
